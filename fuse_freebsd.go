@@ -1,9 +1,12 @@
 package fuse
 
+// Default kernel readahead.
+const defaultReadahead = 128 * 1024
+
+// Max pages per fuse message.
+const maxPages = 32
+
 // Maximum file write size we are prepared to receive from the kernel.
 //
 // This number is just a guess.
-const maxWrite = 128 * 1024
-
-// Default kernel readahead.
-const defaultReadahead = 128 * 1024
+const maxWrite = maxPages * 4096

@@ -48,7 +48,7 @@ const (
 	protoVersionMinMajor = 7
 	protoVersionMinMinor = 17
 	protoVersionMaxMajor = 7
-	protoVersionMaxMinor = 17
+	protoVersionMaxMinor = 28
 )
 
 const (
@@ -292,6 +292,12 @@ const (
 	InitAsyncDIO        InitFlags = 1 << 15
 	InitWritebackCache  InitFlags = 1 << 16
 	InitNoOpenSupport   InitFlags = 1 << 17
+	InitParallelDirops  InitFlags = 1 << 18
+	InitHandleKillpriv  InitFlags = 1 << 19
+	InitPosixACL        InitFlags = 1 << 20
+	InitAbortError      InitFlags = 1 << 21
+	InitMaxPages        InitFlags = 1 << 22
+	InitCacheSymlinks   InitFlags = 1 << 23
 
 	// Deprecated: Not used, OS X remnant.
 	InitCaseSensitive InitFlags = 1 << 29
@@ -325,6 +331,12 @@ var initFlagNames = []flagName{
 	{uint32(InitAsyncDIO), "InitAsyncDIO"},
 	{uint32(InitWritebackCache), "InitWritebackCache"},
 	{uint32(InitNoOpenSupport), "InitNoOpenSupport"},
+	{uint32(InitParallelDirops), "InitParallelDirops"},
+	{uint32(InitHandleKillpriv), "InitHandleKillpriv"},
+	{uint32(InitPosixACL), "InitPosixACL"},
+	{uint32(InitAbortError), "InitAbortError"},
+	{uint32(InitMaxPages), "InitMaxPages"},
+	{uint32(InitCacheSymlinks), "InitCacheSymlinks"},
 }
 
 func (fl InitFlags) String() string {
@@ -752,6 +764,10 @@ type initOut struct {
 	MaxBackground       uint16
 	CongestionThreshold uint16
 	MaxWrite            uint32
+	TimeGran            uint32
+	MaxPages            uint16
+	_                   uint16
+	_                   [8]uint32
 }
 
 type interruptIn struct {
