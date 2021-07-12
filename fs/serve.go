@@ -486,6 +486,7 @@ func (s *Server) Serve(fs FS) error {
 	if err != nil {
 		return fmt.Errorf("cannot obtain root node: %v", err)
 	}
+
 	// Recognize the root node if it's ever returned from Lookup,
 	// passed to Invalidate, etc.
 	s.nodeRef[root] = 1
@@ -497,22 +498,51 @@ func (s *Server) Serve(fs FS) error {
 	})
 	s.handle = append(s.handle, nil)
 
+	jobQueues := 128
+	jobChannels := make([]chan fuse.Request, jobQueues)
+
+	for i := 0; i < jobQueues; i++ {
+		jobChannels[i] = make(chan fuse.Request, jobQueues)
+	}
+
+	worker := func(i int) {
+		for req := range jobChannels[i] {
+			s.serve(req)
+		}
+	}
+
+	for i := 0; i < jobQueues; i++ {
+		s.wg.Add(1)
+		go func(i int) {
+			defer s.wg.Done()
+			worker(i)
+		}(i)
+	}
+
+	jobQueue := 0
 	for {
 		req, err := s.conn.ReadRequest()
 		if err != nil {
 			if err == io.EOF {
+				err = nil
 				break
 			}
-			return err
+			// break instead of return to close the job channels
+			break
 		}
 
-		s.wg.Add(1)
-		go func() {
-			defer s.wg.Done()
-			s.serve(req)
-		}()
+		jobChannels[jobQueue] <- req
+		jobQueue++
+		if jobQueue >= jobQueues {
+			jobQueue = 0
+		}
 	}
-	return nil
+
+	for i := 0; i < jobQueues; i++ {
+		close(jobChannels[i])
+	}
+
+	return err
 }
 
 // Serve serves a FUSE connection with the default settings. See
