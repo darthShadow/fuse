@@ -1,4 +1,4 @@
-module bazil.org/fuse
+module github.com/darthshadow/fuse
 
 go 1.13
 
