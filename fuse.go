@@ -353,6 +353,12 @@ const (
 	ERANGE  = Errno(syscall.ERANGE)
 	ENOTSUP = Errno(syscall.ENOTSUP)
 	EEXIST  = Errno(syscall.EEXIST)
+
+	EROFS        = Errno(syscall.EROFS)
+	EFBIG        = Errno(syscall.EFBIG)
+	ENAMETOOLONG = Errno(syscall.ENAMETOOLONG)
+	ENOTEMPTY    = Errno(syscall.ENOTEMPTY)
+	EINVAL       = Errno(syscall.EINVAL)
 )
 
 // DefaultErrno is the errno used when error returned does not
@@ -367,6 +373,13 @@ var errnoNames = map[Errno]string{
 	EPERM:                       "EPERM",
 	EINTR:                       "EINTR",
 	EEXIST:                      "EEXIST",
+	EROFS:                       "EROFS",
+	ERANGE:                      "ERANGE",
+	ENOTSUP:                     "ENOTSUP",
+	EFBIG:                       "EFBIG",
+	ENAMETOOLONG:                "ENAMETOOLONG",
+	ENOTEMPTY:                   "ENOTEMPTY",
+	EINVAL:                      "EINVAL",
 	Errno(syscall.ENAMETOOLONG): "ENAMETOOLONG",
 }
 
