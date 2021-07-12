@@ -498,11 +498,12 @@ func (s *Server) Serve(fs FS) error {
 	})
 	s.handle = append(s.handle, nil)
 
-	jobQueues := 128
+	jobQueues := 4096
+	jobQueueLength := 128
 	jobChannels := make([]chan fuse.Request, jobQueues)
 
 	for i := 0; i < jobQueues; i++ {
-		jobChannels[i] = make(chan fuse.Request, jobQueues)
+		jobChannels[i] = make(chan fuse.Request, jobQueueLength)
 	}
 
 	worker := func(i int) {
