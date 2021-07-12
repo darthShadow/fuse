@@ -209,6 +209,10 @@ func initMount(c *Conn, conf *mountConfig) error {
 		return fmt.Errorf("missing init, got: %T", req)
 	}
 
+	Debug(fmt.Sprintf("INIT Request: %d.%d\n", r.Kernel.Major, r.Kernel.Minor))
+	Debug(fmt.Sprintf("\tflags: 0x%08x\n", uint32(r.Flags)))
+	Debug(fmt.Sprintf("\tmax_readahead: 0x%08x\n", r.MaxReadahead))
+
 	min := Protocol{protoVersionMinMajor, protoVersionMinMinor}
 	if r.Kernel.LT(min) {
 		req.RespondError(Errno(syscall.EPROTO))
@@ -380,7 +384,6 @@ var errnoNames = map[Errno]string{
 	ENAMETOOLONG:                "ENAMETOOLONG",
 	ENOTEMPTY:                   "ENOTEMPTY",
 	EINVAL:                      "EINVAL",
-	Errno(syscall.ENAMETOOLONG): "ENAMETOOLONG",
 }
 
 // Errno implements Error and ErrorNumber using a syscall.Errno.
@@ -1450,6 +1453,16 @@ func (r *initRequest) Respond(resp *initResponse) {
 	if out.MaxWrite > maxWrite {
 		out.MaxWrite = maxWrite
 	}
+
+	Debug(fmt.Sprintf("INIT Response: %d.%d\n", out.Major, out.Minor))
+	Debug(fmt.Sprintf("\tflags: 0x%08x\n", out.Flags))
+	Debug(fmt.Sprintf("\tmax_readahead: 0x%08x\n", out.MaxReadahead))
+	Debug(fmt.Sprintf("\tmax_write: 0x%08x\n", out.MaxWrite))
+	Debug(fmt.Sprintf("\tmax_background: %d\n", out.MaxBackground))
+	Debug(fmt.Sprintf("\tcongestion_threshold: %d\n", out.CongestionThreshold))
+	Debug(fmt.Sprintf("\ttime_gran: %d\n", out.TimeGran))
+	Debug(fmt.Sprintf("\tmax_pages: %d\n", out.MaxPages))
+
 	if r.Kernel.GE(Protocol{7, 23}) {
 		r.respond(buf)
 	} else {
